@@ -16,7 +16,8 @@ ground_surface = pygame.transform.scale(ground_surface, (1000, 100))
 landing_text = landing_font.render("My Game", True, "Black")
 
 snail_surface = pygame.image.load("graphics/snail/snail1.png").convert_alpha()
-snail_x_pos = 1100
+snail_rect = snail_surface.get_rect(midbottom = (1100, 500))
+snail_speed = 4
 
 while True:
 	for event in pygame.event.get():
@@ -28,11 +29,11 @@ while True:
 	screen.blit(ground_surface, (0, 500))
 	screen.blit(landing_text, (450, 100))
 
-	if snail_x_pos < -100:
-		snail_x_pos = 1100
+	if snail_rect.right < 0:
+		snail_rect.left = 1100
 	else:
-		snail_x_pos -= 5
-	screen.blit(snail_surface, (snail_x_pos, 465))
+		snail_rect.left -= snail_speed
+	screen.blit(snail_surface, snail_rect)
 
 	pygame.display.update()
 	clock.tick(60)
