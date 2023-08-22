@@ -1,2 +1,2 @@
 run:
-	poetry run python3 hello_pygame/main.py
+	poetry run python3 main.py
