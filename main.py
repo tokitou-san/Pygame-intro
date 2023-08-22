@@ -25,13 +25,16 @@ while True:
 			pygame.quit()
 			exit()
 
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			if player_rect.collidepoint(event.pos): print ("Collide")
+
 	screen.blit(sky_surface, (0, 0))
 	screen.blit(ground_surface, (0, 500))
 
+	snail_rect.x -= snail_speed
 	if snail_rect.right < 0:
 		snail_rect.left = 1100
-	else:
-		snail_rect.left -= snail_speed
+
 	screen.blit(snail_surface, snail_rect)
 	screen.blit(player_surface, player_rect)
 
