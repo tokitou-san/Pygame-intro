@@ -7,13 +7,16 @@ pygame.display.set_caption("Hello pygame")
 clock = pygame.time.Clock()
 landing_font = pygame.font.Font("font/Pixeltype.ttf", 50)
 
-sky_surface = pygame.image.load("graphics/Sky.png")
+sky_surface = pygame.image.load("graphics/Sky.png").convert()
 sky_surface = pygame.transform.scale(sky_surface, (1000, 600))
 
-ground_surface = pygame.image.load("graphics/Ground.png")
+ground_surface = pygame.image.load("graphics/Ground.png").convert()
 ground_surface = pygame.transform.scale(ground_surface, (1000, 100))
 
 landing_text = landing_font.render("My Game", True, "Black")
+
+snail_surface = pygame.image.load("graphics/snail/snail1.png").convert_alpha()
+snail_x_pos = 1100
 
 while True:
 	for event in pygame.event.get():
@@ -24,6 +27,12 @@ while True:
 	screen.blit(sky_surface, (0, 0))
 	screen.blit(ground_surface, (0, 500))
 	screen.blit(landing_text, (450, 100))
+
+	if snail_x_pos < -100:
+		snail_x_pos = 1100
+	else:
+		snail_x_pos -= 5
+	screen.blit(snail_surface, (snail_x_pos, 465))
 
 	pygame.display.update()
 	clock.tick(60)
