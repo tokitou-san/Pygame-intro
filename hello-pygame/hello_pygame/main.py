@@ -3,6 +3,8 @@ from sys import exit
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 600))
+pygame.display.set_caption("Hello pygame")
+clock = pygame.time.Clock()
 
 while True:
 	for event in pygame.event.get():
@@ -11,3 +13,4 @@ while True:
 			exit()
 
 	pygame.display.update()
+	clock.tick(60)
