@@ -12,7 +12,7 @@ sky_surface = pygame.transform.scale(sky_surface, (1000, 600))
 ground_surface = pygame.image.load("graphics/Ground.png").convert()
 ground_surface = pygame.transform.scale(ground_surface, (1000, 100))
 
-snail_surface = pygame.image.load("graphics/snail/snail1.png").convert_alpha()
+snail_surface = pygame.image.load("graphics/Snail/snail1.png").convert_alpha()
 snail_rect = snail_surface.get_rect(midbottom = (1100, 500))
 snail_speed = 4
 
