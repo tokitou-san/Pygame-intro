@@ -36,8 +36,9 @@ while True:
 			exit()
 
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_SPACE:
-				player_gravity = -20
+			if player_rect.bottom == 500:
+				if event.key == pygame.K_SPACE:
+					player_gravity = -20
 
 		if event.type == pygame.MOUSEBUTTONDOWN:
 			if player_rect.collidepoint(event.pos):
@@ -55,6 +56,7 @@ while True:
 	# Player
 	player_gravity += 1
 	player_rect.y += player_gravity
+	if player_rect.bottom >= 500: player_rect.bottom = 500
 	screen.blit(player_surface, player_rect)
 
 	pygame.display.update()
