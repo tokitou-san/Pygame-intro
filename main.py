@@ -20,7 +20,7 @@ player_surface = pygame.image.load("graphics/Player/player_walk_1.png").convert_
 player_rect = player_surface.get_rect(bottomleft = (100, 500))
 
 score_surface = pygame.font.Font("font/Pixeltype.ttf", 50)
-score_surface = score_surface.render("Score: 0", False, "Black")
+score_surface = score_surface.render("Score: 0", False, "#5A5A5A")
 score_rect = score_surface.get_rect(center = (500, 100))
 
 while True:
