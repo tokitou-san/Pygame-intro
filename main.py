@@ -24,6 +24,12 @@ def obstacle_movement(obstacle_rect_list) -> list:
 		return obstacle_rect_list
 	else: return []
 
+def collisions(player, obstacles) -> str:
+	if obstacles:
+		for obstacle in obstacles:
+			if player.colliderect(obstacle): return "over"
+	return "playing"
+
 pygame.init()
 screen = pygame.display.set_mode((1000, 600))
 pygame.display.set_caption("Hello pygame")
@@ -42,7 +48,7 @@ sky_surface = pygame.transform.scale(sky_surface, (1000, 600))
 ground_surface = pygame.image.load("graphics/Ground.png").convert()
 ground_surface = pygame.transform.scale(ground_surface, (1000, 100))
 
-# Snail
+# Obstacles
 snail_surface = pygame.image.load("graphics/Snail/snail1.png").convert_alpha()
 fly_surface = pygame.image.load("graphics/Fly/Fly1.png")
 snail_speed = 4
@@ -73,7 +79,6 @@ while True:
 				player_gravity = -22
 			elif event.key == pygame.K_SPACE and game_state == "over":
 				game_state = "playing"
-				obstacle_rect_list = []
 				game_time = int(pygame.time.get_ticks() / 1000)
 
 		if event.type == obstacle_event:
@@ -97,12 +102,12 @@ while True:
 		screen.blit(player_surface, player_rect)
 
 		# Game over
-		if obstacle_rect_list:
-			for obstacle in obstacle_rect_list:
-				if player_rect.colliderect(obstacle):
-					game_state = "over"
+		game_state = collisions(player_rect, obstacle_rect_list)
 
 	elif game_state == "over":
+		obstacle_rect_list.clear()
+		player_rect.bottomleft = (100, 500)
+
 		screen.fill((94, 129, 162))
 		screen.blit(player_stand, player_stand_rect)
 
