@@ -59,12 +59,23 @@ ground_surface = pygame.image.load("graphics/Ground.png").convert()
 ground_surface = pygame.transform.scale(ground_surface, (1000, 100))
 
 # Obstacles
-snail_surface = pygame.image.load("graphics/Snail/snail1.png").convert_alpha()
-fly_surface = pygame.image.load("graphics/Fly/Fly1.png")
-snail_speed = 4
-fly_speed = 5
-
 obstacle_rect_list = []
+
+# Snail
+snail_frame_1 = pygame.image.load("graphics/Snail/snail1.png").convert_alpha()
+snail_frame_2 = pygame.image.load("graphics/Snail/snail2.png").convert_alpha()
+snail_frames = [snail_frame_1, snail_frame_2]
+snail_index = 0
+snail_surface = snail_frames[snail_index]
+snail_speed = 4
+
+# Fly
+fly_frame_1 = pygame.image.load("graphics/Fly/Fly1.png")
+fly_frame_2 = pygame.image.load("graphics/Fly/Fly2.png")
+fly_frames = [fly_frame_1, fly_frame_2]
+fly_index = 0
+fly_surface = fly_frames[fly_index]
+fly_speed = 5
 
 # Player
 player_walk_1 = pygame.image.load("graphics/Player/player_walk_1.png").convert_alpha()
@@ -84,6 +95,14 @@ player_stand_rect = player_stand.get_rect(center = (500, 300))
 obstacle_event = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_event, 1500)
 
+# Snail Timer
+snail_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(snail_timer, 500)
+
+# Fly Timer
+fly_timer = pygame.USEREVENT + 3
+pygame.time.set_timer(fly_timer, 300)
+
 while True:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -97,11 +116,22 @@ while True:
 				game_state = "playing"
 				game_time = int(pygame.time.get_ticks() / 1000)
 
-		if event.type == obstacle_event:
-			if randint(0, 1):
-				obstacle_rect_list.append(snail_surface.get_rect(midbottom = (randint(1000, 1200), 500)))
-			else:
-				obstacle_rect_list.append(fly_surface.get_rect(midbottom = (randint(1000, 1200), 250)))
+		if game_state == "playing":
+			if event.type == obstacle_event:
+				if randint(0, 1):
+					obstacle_rect_list.append(snail_surface.get_rect(midbottom = (randint(1000, 1200), 500)))
+				else:
+					obstacle_rect_list.append(fly_surface.get_rect(midbottom = (randint(1000, 1200), 250)))
+
+			if event.type == snail_timer:
+				if snail_index == 0: snail_index = 1
+				else: snail_index = 0
+				snail_surface = snail_frames[snail_index]
+
+			if event.type == fly_timer:
+				if fly_index == 0: fly_index = 1
+				else: fly_index = 0
+				fly_surface = fly_frames[fly_index]
 
 	if game_state == "playing":
 		screen.blit(sky_surface, (0, 0))
