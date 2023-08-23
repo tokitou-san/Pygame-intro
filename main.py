@@ -16,6 +16,7 @@ def snail_movement(snail_rect_list):
 			snail_rect.x -= snail_speed
 			screen.blit(snail_surface, snail_rect)
 
+		snail_rect_list = [snail_rect for snail_rect in snail_rect_list if snail_rect.x > -100]
 		return snail_rect_list
 	else: return []
 
