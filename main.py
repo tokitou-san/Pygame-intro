@@ -10,14 +10,18 @@ def update_score():
 
 	return current_time
 
-def snail_movement(snail_rect_list):
-	if snail_rect_list:
-		for snail_rect in snail_rect_list:
-			snail_rect.x -= snail_speed
-			screen.blit(snail_surface, snail_rect)
+def obstacle_movement(obstacle_rect_list):
+	if obstacle_rect_list:
+		for obstacle_rect in obstacle_rect_list:
+			if obstacle_rect.bottom == 500:
+				obstacle_rect.x -= snail_speed
+				screen.blit(snail_surface, obstacle_rect)
+			else:
+				obstacle_rect.x -= fly_speed
+				screen.blit(fly_surface, obstacle_rect)
 
-		snail_rect_list = [snail_rect for snail_rect in snail_rect_list if snail_rect.x > -100]
-		return snail_rect_list
+		obstacle_rect_list = [obstacle_rect for obstacle_rect in obstacle_rect_list if obstacle_rect.x > -100]
+		return obstacle_rect_list
 	else: return []
 
 pygame.init()
@@ -40,10 +44,11 @@ ground_surface = pygame.transform.scale(ground_surface, (1000, 100))
 
 # Snail
 snail_surface = pygame.image.load("graphics/Snail/snail1.png").convert_alpha()
-snail_rect = snail_surface.get_rect(midbottom = (1100, 500))
+fly_surface = pygame.image.load("graphics/Fly/Fly1.png")
 snail_speed = 4
+fly_speed = 5
 
-snail_rect_list = []
+obstacle_rect_list = []
 
 # Player
 player_surface = pygame.image.load("graphics/Player/player_walk_1.png").convert_alpha()
@@ -54,8 +59,8 @@ player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
 player_stand_rect = player_stand.get_rect(center = (500, 300))
 
 # Timer
-snail_event = pygame.USEREVENT + 1
-pygame.time.set_timer(snail_event, 1500)
+obstacle_event = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_event, 1500)
 
 while True:
 	for event in pygame.event.get():
@@ -65,14 +70,17 @@ while True:
 
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_SPACE and game_state == "playing" and player_rect.bottom >= 500:
-				player_gravity = -20
+				player_gravity = -22
 			elif event.key == pygame.K_SPACE and game_state == "over":
 				game_state = "playing"
-				snail_rect.left = 1000
+				obstacle_rect_list = []
 				game_time = int(pygame.time.get_ticks() / 1000)
 
-		if event.type == snail_event:
-			snail_rect_list.append(snail_surface.get_rect(midbottom = (randint(1000, 1200), 500)))
+		if event.type == obstacle_event:
+			if randint(0, 1):
+				obstacle_rect_list.append(snail_surface.get_rect(midbottom = (randint(1000, 1200), 500)))
+			else:
+				obstacle_rect_list.append(fly_surface.get_rect(midbottom = (randint(1000, 1200), 250)))
 
 	if game_state == "playing":
 		screen.blit(sky_surface, (0, 0))
@@ -81,7 +89,7 @@ while True:
 		score = update_score()
 
 		# Snail
-		snail_rect_list = snail_movement(snail_rect_list)
+		obstacle_rect_list = obstacle_movement(obstacle_rect_list)
 
 		# Player
 		player_gravity += 1
@@ -89,8 +97,11 @@ while True:
 		if player_rect.bottom >= 500: player_rect.bottom = 500
 		screen.blit(player_surface, player_rect)
 
-		if player_rect.colliderect(snail_rect):
-			game_state = "over"
+		# Game over
+		if obstacle_rect_list:
+			for obstacle in obstacle_rect_list:
+				if player_rect.colliderect(obstacle):
+					game_state = "over"
 
 	elif game_state == "over":
 		screen.fill((94, 129, 162))
