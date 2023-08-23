@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+from random import randint
 
 def update_score():
 	current_time = int(pygame.time.get_ticks() / 1000) - game_time
@@ -8,6 +9,15 @@ def update_score():
 	screen.blit(score_surface, score_rect)
 
 	return current_time
+
+def snail_movement(snail_rect_list):
+	if snail_rect_list:
+		for snail_rect in snail_rect_list:
+			snail_rect.x -= snail_speed
+			screen.blit(snail_surface, snail_rect)
+
+		return snail_rect_list
+	else: return []
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 600))
@@ -32,6 +42,8 @@ snail_surface = pygame.image.load("graphics/Snail/snail1.png").convert_alpha()
 snail_rect = snail_surface.get_rect(midbottom = (1100, 500))
 snail_speed = 4
 
+snail_rect_list = []
+
 # Player
 player_surface = pygame.image.load("graphics/Player/player_walk_1.png").convert_alpha()
 player_rect = player_surface.get_rect(bottomleft = (100, 500))
@@ -39,6 +51,10 @@ player_gravity = 0
 player_stand = pygame.image.load("graphics/Player/player_stand.png").convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
 player_stand_rect = player_stand.get_rect(center = (500, 300))
+
+# Timer
+snail_event = pygame.USEREVENT + 1
+pygame.time.set_timer(snail_event, 1500)
 
 while True:
 	for event in pygame.event.get():
@@ -54,6 +70,9 @@ while True:
 				snail_rect.left = 1000
 				game_time = int(pygame.time.get_ticks() / 1000)
 
+		if event.type == snail_event:
+			snail_rect_list.append(snail_surface.get_rect(midbottom = (randint(1000, 1200), 500)))
+
 	if game_state == "playing":
 		screen.blit(sky_surface, (0, 0))
 		screen.blit(ground_surface, (0, 500))
@@ -61,9 +80,7 @@ while True:
 		score = update_score()
 
 		# Snail
-		snail_rect.x -= snail_speed
-		if snail_rect.right < 0: snail_rect.left = 1100
-		screen.blit(snail_surface, snail_rect)
+		snail_rect_list = snail_movement(snail_rect_list)
 
 		# Player
 		player_gravity += 1
