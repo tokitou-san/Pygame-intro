@@ -1,6 +1,14 @@
 import pygame
 from sys import exit
 
+def update_score():
+	current_time = int(pygame.time.get_ticks() / 1000) - game_time
+	score_surface = text_surface.render(f"Score: {current_time}", False, "#5A5A5A")
+	score_rect = score_surface.get_rect(center = (500, 100))
+	screen.blit(score_surface, score_rect)
+
+	return current_time
+
 pygame.init()
 screen = pygame.display.set_mode((1000, 600))
 pygame.display.set_caption("Hello pygame")
@@ -31,14 +39,6 @@ player_gravity = 0
 player_stand = pygame.image.load("graphics/Player/player_stand.png").convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
 player_stand_rect = player_stand.get_rect(center = (500, 300))
-
-def update_score():
-	current_time = int(pygame.time.get_ticks() / 1000) - game_time
-	score_surface = text_surface.render(f"Score: {current_time}", False, "#5A5A5A")
-	score_rect = score_surface.get_rect(center = (500, 100))
-	screen.blit(score_surface, score_rect)
-
-	return current_time
 
 while True:
 	for event in pygame.event.get():
@@ -88,10 +88,8 @@ while True:
 		game_score_rect = game_score.get_rect(center = (500, 135))
 
 		screen.blit(game_over_text_surface, game_over_text_surface_rect)
-		if score:
-			screen.blit(game_score, game_score_rect)
-		else:
-			screen.blit(game_msg, game_msg_rect)
+		if score: screen.blit(game_score, game_score_rect)
+		else: screen.blit(game_msg, game_msg_rect)
 
 	pygame.display.update()
 	clock.tick(60)
