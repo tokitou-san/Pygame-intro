@@ -30,6 +30,16 @@ def collisions(player, obstacles) -> str:
 			if player.colliderect(obstacle): return "over"
 	return "playing"
 
+def player_animation():
+	global player_surface, player_index
+
+	if player_rect.bottom < 300:
+		player_surface = player_jumb
+	else:
+		player_index += 0.1
+		if player_index > len(player_walk): player_index = 0
+		player_surface = player_walk[int(player_index)]
+
 pygame.init()
 screen = pygame.display.set_mode((1000, 600))
 pygame.display.set_caption("Hello pygame")
@@ -57,10 +67,16 @@ fly_speed = 5
 obstacle_rect_list = []
 
 # Player
-player_surface = pygame.image.load("graphics/Player/player_walk_1.png").convert_alpha()
-player_rect = player_surface.get_rect(bottomleft = (100, 500))
-player_gravity = 0
+player_walk_1 = pygame.image.load("graphics/Player/player_walk_1.png").convert_alpha()
+player_walk_2 = pygame.image.load("graphics/Player/player_walk_2.png").convert_alpha()
+player_jumb = pygame.image.load("graphics/Player/jump.png").convert_alpha()
 player_stand = pygame.image.load("graphics/Player/player_stand.png").convert_alpha()
+
+player_gravity = 0
+player_walk = [player_walk_1, player_walk_2]
+player_index = 0
+player_surface = player_walk[player_index]
+player_rect = player_surface.get_rect(bottomleft = (100, 500))
 player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
 player_stand_rect = player_stand.get_rect(center = (500, 300))
 
@@ -99,6 +115,7 @@ while True:
 		player_gravity += 1
 		player_rect.y += player_gravity
 		if player_rect.bottom >= 500: player_rect.bottom = 500
+		player_animation()
 		screen.blit(player_surface, player_rect)
 
 		# Game over
