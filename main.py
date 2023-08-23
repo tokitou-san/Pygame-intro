@@ -5,6 +5,8 @@ pygame.init()
 screen = pygame.display.set_mode((1000, 600))
 pygame.display.set_caption("Hello pygame")
 clock = pygame.time.Clock()
+text_surface = pygame.font.Font("font/Pixeltype.ttf", 50)
+game_state = "playing"
 
 # Sky
 sky_surface = pygame.image.load("graphics/Sky.png").convert()
@@ -25,8 +27,7 @@ player_rect = player_surface.get_rect(bottomleft = (100, 500))
 player_gravity = 0
 
 # Score
-score_surface = pygame.font.Font("font/Pixeltype.ttf", 50)
-score_surface = score_surface.render("Score: 0", False, "#5A5A5A")
+score_surface = text_surface.render("Score: 0", False, "#5A5A5A")
 score_rect = score_surface.get_rect(center = (500, 100))
 
 while True:
@@ -36,23 +37,37 @@ while True:
 			exit()
 
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_SPACE and player_rect.bottom >= 500:
+			if event.key == pygame.K_SPACE and game_state == "playing" and player_rect.bottom >= 500:
 				player_gravity = -20
+			elif event.key == pygame.K_SPACE and game_state == "over":
+				game_state = "playing"
+				snail_rect.left = 1000
 
-	screen.blit(sky_surface, (0, 0))
-	screen.blit(ground_surface, (0, 500))
-	screen.blit(score_surface, score_rect)
-	
-	# Snail
-	snail_rect.x -= snail_speed
-	if snail_rect.right < 0: snail_rect.left = 1100
-	screen.blit(snail_surface, snail_rect)
+	if game_state == "playing":
+		screen.blit(sky_surface, (0, 0))
+		screen.blit(ground_surface, (0, 500))
+		screen.blit(score_surface, score_rect)
+		
+		# Snail
+		snail_rect.x -= snail_speed
+		if snail_rect.right < 0: snail_rect.left = 1100
+		screen.blit(snail_surface, snail_rect)
 
-	# Player
-	player_gravity += 1
-	player_rect.y += player_gravity
-	if player_rect.bottom >= 500: player_rect.bottom = 500
-	screen.blit(player_surface, player_rect)
+		# Player
+		player_gravity += 1
+		player_rect.y += player_gravity
+		if player_rect.bottom >= 500: player_rect.bottom = 500
+		screen.blit(player_surface, player_rect)
+
+		if player_rect.colliderect(snail_rect):
+			game_state = "over"
+
+	elif game_state == "over":
+		screen.fill("Black")
+
+		game_over_text_surface = text_surface.render("Game Over!", False, "White")
+		game_over_text_surface_rect = game_over_text_surface.get_rect(center = (500, 300))
+		screen.blit(game_over_text_surface, game_over_text_surface_rect)
 
 	pygame.display.update()
 	clock.tick(60)
