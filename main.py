@@ -107,6 +107,7 @@ while True:
 	elif game_state == "over":
 		obstacle_rect_list.clear()
 		player_rect.bottomleft = (100, 500)
+		player_gravity = 0
 
 		screen.fill((94, 129, 162))
 		screen.blit(player_stand, player_stand_rect)
