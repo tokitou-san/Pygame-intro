@@ -2,7 +2,7 @@ import pygame
 from sys import exit
 from random import randint
 
-def update_score():
+def update_score() -> int:
 	current_time = int(pygame.time.get_ticks() / 1000) - game_time
 	score_surface = text_surface.render(f"Score: {current_time}", False, "#5A5A5A")
 	score_rect = score_surface.get_rect(center = (500, 100))
@@ -10,7 +10,7 @@ def update_score():
 
 	return current_time
 
-def obstacle_movement(obstacle_rect_list):
+def obstacle_movement(obstacle_rect_list) -> list:
 	if obstacle_rect_list:
 		for obstacle_rect in obstacle_rect_list:
 			if obstacle_rect.bottom == 500:
@@ -87,8 +87,7 @@ while True:
 		screen.blit(ground_surface, (0, 500))
 		# Score
 		score = update_score()
-
-		# Snail
+		# Obstacles
 		obstacle_rect_list = obstacle_movement(obstacle_rect_list)
 
 		# Player
