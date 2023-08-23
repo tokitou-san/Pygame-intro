@@ -29,6 +29,10 @@ while True:
 			pygame.quit()
 			exit()
 
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_SPACE:
+				print("Jumb")
+
 	screen.blit(sky_surface, (0, 0))
 	screen.blit(ground_surface, (0, 500))
 
