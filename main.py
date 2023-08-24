@@ -49,13 +49,13 @@ class Obstacle(pygame.sprite.Sprite):
 			snail_frame_2 = pygame.image.load("graphics/Snail/snail2.png").convert_alpha()
 			self.frames = [snail_frame_1, snail_frame_2]
 			y_pos = 500
-			self.speed = 4
+			self.speed = 5
 		else:
 			fly_frame_1 = pygame.image.load("graphics/Fly/Fly1.png")
 			fly_frame_2 = pygame.image.load("graphics/Fly/Fly2.png")
 			self.frames = [fly_frame_1, fly_frame_2]
-			y_pos = 300
-			self.speed = 5
+			y_pos = 400
+			self.speed = 6
 
 		self.animation_index = 0
 		self.image = self.frames[self.animation_index]
@@ -85,11 +85,11 @@ def update_score() -> int:
 
 	return current_time
 
-def collisions(player, obstacles) -> str:
-	if obstacles:
-		for obstacle in obstacles:
-			if player.colliderect(obstacle): return "over"
-	return "playing"
+def collision_sprite() -> str:
+	if pygame.sprite.spritecollide(player.sprite, obstacles, False):
+		obstacles.empty()
+		return "over"
+	else: return "playing"
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 600))
@@ -119,14 +119,6 @@ obstacles = pygame.sprite.Group()
 obstacle_event = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_event, 1500)
 
-# Snail Timer
-snail_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(snail_timer, 500)
-
-# Fly Timer
-fly_timer = pygame.USEREVENT + 3
-pygame.time.set_timer(fly_timer, 300)
-
 while True:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -138,8 +130,8 @@ while True:
 				game_state = "playing"
 				game_time = int(pygame.time.get_ticks() / 1000)
 
-		if game_state == "playing":
-			if event.type == obstacle_event: obstacles.add(Obstacle(choice(["fly", "snail", "snail"])))
+		if event.type == obstacle_event and game_state == "playing":
+			obstacles.add(Obstacle(choice(["fly", "snail", "snail"])))
 
 	if game_state == "playing":
 		screen.blit(sky_surface, (0, 0))
@@ -156,7 +148,7 @@ while True:
 		obstacles.update()
 
 		# Game over
-		# game_state = collisions(player.get_rect(), obstacle_rect_list)
+		game_state = collision_sprite()
 
 	elif game_state == "over":
 		screen.fill("Black")
