@@ -2,6 +2,45 @@ import pygame
 from sys import exit
 from random import randint
 
+class Player(pygame.sprite.Sprite):
+	def __init__(self) -> None:
+		super().__init__()
+
+		player_walk_1 = pygame.image.load("graphics/Player/player_walk_1.png").convert_alpha()
+		player_walk_2 = pygame.image.load("graphics/Player/player_walk_2.png").convert_alpha()
+		self.player_walk = [player_walk_1, player_walk_2]
+		self.player_index = 0
+		self.player_jumb = pygame.image.load("graphics/Player/jump.png").convert_alpha()
+
+		self.image = self.player_walk[self.player_index]
+		self.rect = self.image.get_rect(bottomleft = (100, 500))
+		self.gravity = 0
+
+	def get_rect(self):
+		return self.rect
+
+	def player_input(self):
+		keys = pygame.key.get_pressed()
+		if keys[pygame.K_SPACE] and self.rect.bottom >= 500:
+			self.gravity = -22
+
+	def player_gravity(self):
+		self.gravity += 1
+		self.rect.y += self.gravity
+		if self.rect.bottom >= 500: self.rect.bottom = 500
+
+	def player_animation(self):
+		if self.rect.bottom < 500: self.image = self.player_jumb
+		else:
+			self.player_index += 0.1
+			if self.player_index >= len(self.player_walk): self.player_index = 0
+			self.image = self.player_walk[int(self.player_index)]
+
+	def update(self):
+		self.player_input()
+		self.player_gravity()
+		self.player_animation()
+
 def update_score() -> int:
 	current_time = int(pygame.time.get_ticks() / 1000) - game_time
 	score_surface = text_surface.render(f"Score: {current_time}", False, "#5A5A5A")
@@ -29,16 +68,6 @@ def collisions(player, obstacles) -> str:
 		for obstacle in obstacles:
 			if player.colliderect(obstacle): return "over"
 	return "playing"
-
-def player_animation():
-	global player_surface, player_index
-
-	if player_rect.bottom < 300:
-		player_surface = player_jumb
-	else:
-		player_index += 0.1
-		if player_index > len(player_walk): player_index = 0
-		player_surface = player_walk[int(player_index)]
 
 pygame.init()
 screen = pygame.display.set_mode((1000, 600))
@@ -77,19 +106,9 @@ fly_index = 0
 fly_surface = fly_frames[fly_index]
 fly_speed = 5
 
-# Player
-player_walk_1 = pygame.image.load("graphics/Player/player_walk_1.png").convert_alpha()
-player_walk_2 = pygame.image.load("graphics/Player/player_walk_2.png").convert_alpha()
-player_jumb = pygame.image.load("graphics/Player/jump.png").convert_alpha()
-player_stand = pygame.image.load("graphics/Player/player_stand.png").convert_alpha()
-
-player_gravity = 0
-player_walk = [player_walk_1, player_walk_2]
-player_index = 0
-player_surface = player_walk[player_index]
-player_rect = player_surface.get_rect(bottomleft = (100, 500))
-player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
-player_stand_rect = player_stand.get_rect(center = (500, 300))
+# Groups
+player = pygame.sprite.GroupSingle()
+player.add(Player())
 
 # Timer
 obstacle_event = pygame.USEREVENT + 1
@@ -110,9 +129,7 @@ while True:
 			exit()
 
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_SPACE and game_state == "playing" and player_rect.bottom >= 500:
-				player_gravity = -22
-			elif event.key == pygame.K_SPACE and game_state == "over":
+			if event.key == pygame.K_SPACE and game_state == "over":
 				game_state = "playing"
 				game_time = int(pygame.time.get_ticks() / 1000)
 
@@ -142,35 +159,19 @@ while True:
 		obstacle_rect_list = obstacle_movement(obstacle_rect_list)
 
 		# Player
-		player_gravity += 1
-		player_rect.y += player_gravity
-		if player_rect.bottom >= 500: player_rect.bottom = 500
-		player_animation()
-		screen.blit(player_surface, player_rect)
+		player.draw(screen)
+		player.update()
 
 		# Game over
-		game_state = collisions(player_rect, obstacle_rect_list)
+		# game_state = collisions(player.get_rect(), obstacle_rect_list)
 
 	elif game_state == "over":
 		obstacle_rect_list.clear()
-		player_rect.bottomleft = (100, 500)
-		player_gravity = 0
+		screen.fill("Black")
 
-		screen.fill((94, 129, 162))
-		screen.blit(player_stand, player_stand_rect)
-
-		game_over_text_surface = text_surface.render("PyGame", False, "White")
-		game_over_text_surface_rect = game_over_text_surface.get_rect(center = (500, 100))
-		# Message
-		game_msg = msg_text_surface.render("Press Space to start", False, "White")
-		game_msg_rect = game_msg.get_rect(center = (500, 135))
-		# Score
-		game_score = msg_text_surface.render(f"Your Score: {score}", False, "White")
-		game_score_rect = game_score.get_rect(center = (500, 135))
-
+		game_over_text_surface = text_surface.render("Game Over!", False, "White")
+		game_over_text_surface_rect = game_over_text_surface.get_rect(center = (500, 300))
 		screen.blit(game_over_text_surface, game_over_text_surface_rect)
-		if score: screen.blit(game_score, game_score_rect)
-		else: screen.blit(game_msg, game_msg_rect)
 
 	pygame.display.update()
 	clock.tick(60)
