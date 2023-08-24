@@ -72,7 +72,10 @@ class Obstacle(pygame.sprite.Sprite):
 	def update(self) -> None:
 		self.obstacle_animation()
 		self.obstacle_movement()
+		self.destroy()
 
+	def destroy(self) -> None:
+		if self.rect.x < -100: self.kill()
 
 def update_score() -> int:
 	current_time = int(pygame.time.get_ticks() / 1000) - game_time
@@ -136,7 +139,7 @@ while True:
 				game_time = int(pygame.time.get_ticks() / 1000)
 
 		if game_state == "playing":
-			if event.type == obstacle_event: obstacles.add(Obstacle(type=choice(["snail", "fly"])))
+			if event.type == obstacle_event: obstacles.add(Obstacle(choice(["fly", "snail", "snail"])))
 
 	if game_state == "playing":
 		screen.blit(sky_surface, (0, 0))
