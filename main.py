@@ -16,12 +16,17 @@ class Player(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect(bottomleft = (100, 500))
 		self.gravity = 0
 
+		self.jumb_sound = pygame.mixer.Sound("audio/jump.mp3")
+		self.jumb_sound.set_volume(0.25)
+
 	def get_rect(self) -> pygame.Rect:
 		return self.rect
 
 	def player_input(self) -> None:
 		keys = pygame.key.get_pressed()
-		if keys[pygame.K_SPACE] and self.rect.bottom >= 500: self.gravity = -22
+		if keys[pygame.K_SPACE] and self.rect.bottom >= 500:
+			self.gravity = -22
+			self.jumb_sound.play()
 
 	def player_gravity(self) -> None:
 		self.gravity += 1
@@ -95,6 +100,11 @@ pygame.init()
 screen = pygame.display.set_mode((1000, 600))
 pygame.display.set_caption("Hello pygame")
 clock = pygame.time.Clock()
+# Background music
+bg_music = pygame.mixer.Sound("audio/music.wav")
+bg_music.set_volume(0.25)
+bg_music.play(loops = -1)
+
 text_surface = pygame.font.Font("font/Pixeltype.ttf", 50)
 msg_text_surface = pygame.font.Font("font/Pixeltype.ttf", 30)
 game_state = "playing"
