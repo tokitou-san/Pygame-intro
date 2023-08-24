@@ -16,26 +16,26 @@ class Player(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect(bottomleft = (100, 500))
 		self.gravity = 0
 
-	def get_rect(self):
+	def get_rect(self) -> pygame.Rect:
 		return self.rect
 
-	def player_input(self):
+	def player_input(self) -> None:
 		keys = pygame.key.get_pressed()
 		if keys[pygame.K_SPACE] and self.rect.bottom >= 500: self.gravity = -22
 
-	def player_gravity(self):
+	def player_gravity(self) -> None:
 		self.gravity += 1
 		self.rect.y += self.gravity
 		if self.rect.bottom >= 500: self.rect.bottom = 500
 
-	def player_animation(self):
+	def player_animation(self) -> None:
 		if self.rect.bottom < 500: self.image = self.player_jumb
 		else:
 			self.player_index += 0.1
 			if self.player_index >= len(self.player_walk): self.player_index = 0
 			self.image = self.player_walk[int(self.player_index)]
 
-	def update(self):
+	def update(self) -> None:
 		self.player_input()
 		self.player_gravity()
 		self.player_animation()
@@ -61,15 +61,15 @@ class Obstacle(pygame.sprite.Sprite):
 		self.image = self.frames[self.animation_index]
 		self.rect = self.image.get_rect(midbottom = (randint(1000, 1100), y_pos))
 
-	def obstacle_animation(self):
+	def obstacle_animation(self) -> None:
 		self.animation_index += 0.1
 		if self.animation_index >= len(self.frames): self.animation_index = 0
 		self.image = self.frames[int(self.animation_index)]
 
-	def obstacle_movement(self):
+	def obstacle_movement(self) -> None:
 		self.rect.x -= self.speed
 
-	def update(self):
+	def update(self) -> None:
 		self.obstacle_animation()
 		self.obstacle_movement()
 
