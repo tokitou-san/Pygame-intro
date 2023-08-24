@@ -19,9 +19,6 @@ class Player(pygame.sprite.Sprite):
 		self.jumb_sound = pygame.mixer.Sound("audio/jump.mp3")
 		self.jumb_sound.set_volume(0.25)
 
-	def get_rect(self) -> pygame.Rect:
-		return self.rect
-
 	def player_input(self) -> None:
 		keys = pygame.key.get_pressed()
 		if keys[pygame.K_SPACE] and self.rect.bottom >= 500:
@@ -80,6 +77,10 @@ class Obstacle(pygame.sprite.Sprite):
 		self.destroy()
 
 	def destroy(self) -> None:
+		"""
+		Remove sprite of it went too left
+		For performance optimization
+		"""
 		if self.rect.x < -100: self.kill()
 
 def update_score() -> int:
@@ -91,8 +92,14 @@ def update_score() -> int:
 	return current_time
 
 def collision_sprite() -> str:
+	"""
+	If Player collide with any sprite on Obstacles group
+	Game over
+	"""
 	if pygame.sprite.spritecollide(player.sprite, obstacles, False):
+		# Clear obstacles and place player on floor
 		obstacles.empty()
+		player.sprite.rect.bottom = 500
 		return "over"
 	else: return "playing"
 
@@ -105,16 +112,16 @@ bg_music = pygame.mixer.Sound("audio/music.wav")
 bg_music.set_volume(0.25)
 bg_music.play(loops = -1)
 
-text_surface = pygame.font.Font("font/Pixeltype.ttf", 50)
-msg_text_surface = pygame.font.Font("font/Pixeltype.ttf", 30)
 game_state = "playing"
 game_time = 0
 score = 0
 
+# Surfaces
+text_surface = pygame.font.Font("font/Pixeltype.ttf", 50)
+msg_text_surface = pygame.font.Font("font/Pixeltype.ttf", 30)
 # Sky
 sky_surface = pygame.image.load("graphics/Sky.png").convert()
 sky_surface = pygame.transform.scale(sky_surface, (1000, 600))
-
 # Ground
 ground_surface = pygame.image.load("graphics/Ground.png").convert()
 ground_surface = pygame.transform.scale(ground_surface, (1000, 100))
@@ -125,7 +132,7 @@ player.add(Player())
 
 obstacles = pygame.sprite.Group()
 
-# Timer
+# Timer events
 obstacle_event = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_event, 1500)
 
@@ -137,10 +144,18 @@ while True:
 
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_SPACE and game_state == "over":
-				game_state = "playing"
+				"""
+				If press "Space" key after Game over
+				Game restarts
+				"""
 				game_time = int(pygame.time.get_ticks() / 1000)
+				game_state = "playing"
 
 		if event.type == obstacle_event and game_state == "playing":
+			"""
+			Randomly pick Obstacle type
+			"snail" | "fly"
+			"""
 			obstacles.add(Obstacle(choice(["fly", "snail", "snail"])))
 
 	if game_state == "playing":
@@ -168,4 +183,4 @@ while True:
 		screen.blit(game_over_text_surface, game_over_text_surface_rect)
 
 	pygame.display.update()
-	clock.tick(60)
+	clock.tick(60) # 60 fps
