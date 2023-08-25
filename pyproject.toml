@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pygame = "^2.5.1"
+pygame-ce = "^2.3.1"
 
 
 [build-system]
