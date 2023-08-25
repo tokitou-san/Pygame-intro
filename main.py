@@ -53,8 +53,8 @@ class Obstacle(pygame.sprite.Sprite):
 			y_pos = 500
 			self.speed = 5
 		else:
-			fly_frame_1 = pygame.image.load("graphics/Fly/Fly1.png")
-			fly_frame_2 = pygame.image.load("graphics/Fly/Fly2.png")
+			fly_frame_1 = pygame.image.load("graphics/Fly/Fly1.png").convert_alpha()
+			fly_frame_2 = pygame.image.load("graphics/Fly/Fly2.png").convert_alpha()
 			self.frames = [fly_frame_1, fly_frame_2]
 			y_pos = 400
 			self.speed = 6
